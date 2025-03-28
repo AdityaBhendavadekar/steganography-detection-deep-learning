@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 export default function App() {
   const [image, setImage] = useState(null);
@@ -14,30 +15,29 @@ export default function App() {
 
   const handleUpload = async () => {
     if (!image) {
-      alert("Please select an image first.");
+      alert("Please select an image file first!");
       return;
     }
 
     const formData = new FormData();
-    formData.append("file", image);
+    formData.append("file", image); // 'file' should match Flask's request.files key
 
     setLoading(true);
-    setResult("");
+    setResult(""); // Clear previous result
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/predict", {
-        method: "POST",
-        body: formData,
+      const res = await axios.post("http://localhost:5000/detect-stegano", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      const data = await response.json();
-      setResult(data.prediction);
+      setResult(res.data.message);
     } catch (error) {
-      console.error("Error:", error);
-      setResult("Error detecting steganography.");
-    } finally {
-      setLoading(false);
+      console.error("Error detecting steganography:", error);
+      setResult("Error processing image");
     }
+
+    setLoading(false);
   };
 
   return (
