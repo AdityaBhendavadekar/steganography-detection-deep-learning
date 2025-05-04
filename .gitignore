@@ -1,0 +1,10 @@
+env
+newEnv
+test.py
+__pycache__
+test.ipynb
+models
+*.keras
+*.h5
+*.json
+*.yaml
